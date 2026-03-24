@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comrade Hotel — Kirinyaga</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0c07;
+    --surface: #1a1610;
+    --surface2: #241f17;
+    --surface3: #2e2820;
+    --border: #3a3228;
+    --accent: #e8a020;
+    --accent2: #f5c842;
+    --accent3: #c06010;
+    --green: #4caf74;
+    --red: #e05050;
+    --text: #f0e8d8;
+    --text2: #b8a888;
+    --text3: #7a6848;
+    --white: #fff8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header {
+    background: linear-gradient(135deg, #1a1408 0%, #2a1e08 40%, #1a1408 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 0 20px; position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; min-height: 60px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { font-size: 26px; }
+  .logo-text h1 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--accent2); line-height: 1.1; letter-spacing: 0.04em; }
+  .logo-text p { font-size: 0.65rem; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; }
+  .header-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .clock { font-family: 'DM Mono', monospace; font-size: 0.9rem; color: var(--accent); }
+  .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .status-open { background: rgba(76,175,116,0.15); color: var(--green); border: 1px solid rgba(76,175,116,0.3); }
+  .status-closed { background: rgba(224,80,80,0.15); color: var(--red); border: 1px solid rgba(224,80,80,0.3); }
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 12px; display: flex; gap: 2px; overflow-x: auto; }
+  nav button { background: none; border: none; color: var(--text3); padding: 13px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; white-space: nowrap; position: relative; transition: color 0.2s; }
+  nav button::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transition: transform 0.2s; }
+  nav button.active { color: var(--accent2); }
+  nav button.active::after { transform: scaleX(1); }
+  nav button:hover { color: var(--text); }
+  main { padding: 16px; max-width: 1200px; margin: 0 auto; }
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 14px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--accent2); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+  .stat-value { font-family: 'DM Mono', monospace; font-size: 1.35rem; font-weight: 500; color: var(--accent2); }
+  .stat-label { font-size: 0.7rem; color: var(--text3); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .menu-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; transition: border-color 0.2s; }
+  .menu-item:hover { border-color: var(--accent3); }
+  .menu-item-name { font-weight: 600; font-size: 0.88rem; color: var(--text); margin-bottom: 4px; }
+  .menu-item-price { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent); margin-bottom: 8px; }
+  .qty-control { display: flex; align-items: center; gap: 8px; }
+  .qty-btn { width: 28px; height: 28px; border-radius: 6px; background: var(--surface3); border: 1px solid var(--border); color: var(--text); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+  .qty-btn:hover { background: var(--accent3); }
+  .qty-display { font-family: 'DM Mono', monospace; font-size: 1rem; color: var(--accent2); min-width: 26px; text-align: center; font-weight: 500; }
+  .chips-options { display: flex; gap: 5px; margin-bottom: 6px; flex-wrap: wrap; }
+  .chips-opt { padding: 3px 9px; border-radius: 20px; font-size: 0.72rem; cursor: pointer; border: 1px solid var(--border); background: var(--surface3); color: var(--text2); transition: all 0.15s; }
+  .chips-opt.selected { background: var(--accent3); border-color: var(--accent); color: var(--white); }
+  .btn { padding: 9px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.83rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; letter-spacing: 0.02em; }
+  .btn-primary { background: var(--accent); color: #1a1200; }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-secondary { background: var(--surface3); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: rgba(224,80,80,0.15); color: var(--red); border: 1px solid rgba(224,80,80,0.3); }
+  .btn-danger:hover { background: rgba(224,80,80,0.25); }
+  .btn-sm { padding: 5px 12px; font-size: 0.75rem; }
+  .order-line { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+  .order-total { display: flex; justify-content: space-between; padding: 10px 0; font-weight: 700; font-size: 1rem; color: var(--accent2); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { text-align: left; padding: 9px 10px; color: var(--text3); font-weight: 500; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid var(--border); }
+  td { padding: 9px 10px; border-bottom: 1px solid rgba(58,50,40,0.35); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 0.68rem; font-weight: 600; }
+  .badge-sale { background: rgba(232,160,32,0.15); color: var(--accent); }
+  .badge-out { background: rgba(224,80,80,0.15); color: var(--red); }
+  .form-row { display: flex; gap: 9px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 10px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 130px; }
+  label { font-size: 0.72rem; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; }
+  input, select, textarea { background: var(--surface3); border: 1px solid var(--border); border-radius: 7px; color: var(--text); padding: 8px 11px; font-family: 'DM Sans', sans-serif; font-size: 0.83rem; width: 100%; outline: none; transition: border-color 0.15s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  select option { background: var(--surface2); }
+  .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .inv-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+  .inv-name { font-weight: 600; font-size: 0.85rem; margin-bottom: 3px; }
+  .inv-detail { font-size: 0.75rem; color: var(--text2); margin-bottom: 6px; }
+  .inv-qty { font-family: 'DM Mono', monospace; font-size: 1.1rem; color: var(--accent2); }
+  .inv-unit { font-size: 0.7rem; color: var(--text3); }
+  .chap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+  .chap-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+  .chap-big { font-family: 'DM Mono', monospace; font-size: 1.9rem; font-weight: 500; color: var(--accent2); }
+  .chap-label { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 3px; }
+  .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .photo-slot { border: 2px dashed var(--border); border-radius: 10px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: border-color 0.2s; position: relative; overflow: hidden; }
+  .photo-slot:hover { border-color: var(--accent); }
+  .photo-slot img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; position: absolute; inset: 0; }
+  .photo-slot-label { font-size: 0.7rem; color: var(--text3); text-align: center; z-index: 1; pointer-events: none; }
+  .photo-slot-icon { font-size: 1.4rem; z-index: 1; pointer-events: none; }
+  .photo-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; border-radius: 8px; z-index: 2; pointer-events: none; }
+  .photo-slot:hover .photo-overlay { opacity: 1; }
+  .photo-slot input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 3; }
+  .ts { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text3); }
+  .flex { display: flex; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .flex-wrap { flex-wrap: wrap; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mb-12 { margin-bottom: 12px; }
+  .text-green { color: var(--green); }
+  .text-red { color: var(--red); }
+  .text-accent { color: var(--accent); }
+  .mono { font-family: 'DM Mono', monospace; }
+  .bold { font-weight: 700; }
+  .text-sm { font-size: 0.8rem; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--accent2); margin-bottom: 14px; }
+  .toast-container { position: fixed; bottom: 16px; right: 16px; z-index: 300; display: flex; flex-direction: column; gap: 7px; }
+  .toast { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 14px; font-size: 0.8rem; color: var(--text); animation: slideIn 0.3s ease; min-width: 200px; }
+  .toast.success { border-left: 3px solid var(--green); }
+  .toast.error { border-left: 3px solid var(--red); }
+  .toast.info { border-left: 3px solid var(--accent); }
+  @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  @media (max-width: 640px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .menu-grid { grid-template-columns: repeat(2, 1fr); }
+    .sales-layout { grid-template-columns: 1fr !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-icon">🍽️</span>
+    <div class="logo-text">
+      <h1>COMRADE HOTEL</h1>
+      <p>Kirinyaga University · Kirinyaga County</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="clock" id="clockDisplay">--:--:--</span>
+    <span class="status-badge status-closed" id="statusBadge">● CLOSED</span>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('dashboard')">📊 Dashboard</button>
+  <button onclick="showTab('sales')">🛒 Sales</button>
+  <button onclick="showTab('expenses')">💸 Expenses</button>
+  <button onclick="showTab('inventory')">📦 Inventory</button>
+  <button onclick="showTab('chapati')">🫓 Chapati</button>
+  <button onclick="showTab('photos')">📸 Photos</button>
+  <button onclick="showTab('ledger')">📒 Ledger</button>
+  <button onclick="showTab('personnel')">👥 Personnel</button>
+</nav>
+
+<main>
+
+<!-- DASHBOARD -->
+<div id="tab-dashboard" class="tab-section active">
+  <div class="stats-grid" id="summaryStats"></div>
+  <div class="stats-grid" id="financialStats"></div>
+  <div class="card">
+    <div class="card-title">🕐 Recent Activity</div>
+    <div id="recentActivity"></div>
+  </div>
+</div>
+
+<!-- SALES -->
+<div id="tab-sales" class="tab-section">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:14px" class="sales-layout">
+    <div>
+      <div class="card">
+        <div class="card-title">🍽️ Menu — Select Items</div>
+        <div class="menu-grid" id="menuGrid"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="position:sticky;top:68px">
+        <div class="card-title">🧾 Current Order</div>
+        <div id="orderLines"></div>
+        <hr>
+        <div class="order-total"><span>TOTAL</span><span class="mono" id="orderTotal">KSH 0</span></div>
+        <div class="form-group mt-8">
+          <label>Customer / Note</label>
+          <input type="text" id="orderNote" placeholder="Table, student name...">
+        </div>
+        <div class="flex gap-8 mt-8">
+          <button class="btn btn-secondary btn-sm" onclick="clearOrder()">Clear</button>
+          <button class="btn btn-primary" style="flex:1" onclick="recordSale()">✓ Record Sale</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPENSES -->
+<div id="tab-expenses" class="tab-section">
+  <div class="card">
+    <div class="card-title">➕ Add Expense / Purchase</div>
+    <div class="form-row">
+      <div class="form-group"><label>Item / Description</label><input type="text" id="expItem" placeholder="e.g. Charcoal, Fat, Onions…"></div>
+      <div class="form-group" style="max-width:140px"><label>Amount (KSH)</label><input type="number" id="expAmount" placeholder="0" min="0"></div>
+      <div class="form-group" style="max-width:180px">
+        <label>Category</label>
+        <select id="expCategory">
+          <option value="fuel">Fuel (Charcoal)</option>
+          <option value="oil">Oil / Fat</option>
+          <option value="flour">Wheat Flour</option>
+          <option value="rice_stock">Rice Stock</option>
+          <option value="beans_stock">Beans Stock</option>
+          <option value="ndengu_stock">Ndengu Stock</option>
+          <option value="veg">Vegetables</option>
+          <option value="spices">Spices / Salt / Sugar / BP</option>
+          <option value="dairy">Dairy (Milk)</option>
+          <option value="salary">Salary / Wages</option>
+          <option value="utilities">Utilities / Other</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Qty / Unit (optional)</label><input type="text" id="expQty" placeholder="e.g. 2kg, 1 packet, 10L"></div>
+      <div class="form-group"><label>Notes</label><input type="text" id="expNote" placeholder="Additional details…"></div>
+      <div style="display:flex;align-items:flex-end"><button class="btn btn-danger" onclick="addExpense()">➕ Add Expense</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="flex justify-between items-center mb-12 flex-wrap gap-8">
+      <div class="card-title" style="margin-bottom:0">📋 Expenses Log</div>
+      <span class="mono text-red bold" id="totalExpenses">KSH 0</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Time</th><th>Item</th><th>Category</th><th>Qty</th><th>Amount</th><th>Edit</th></tr></thead>
+        <tbody id="expenseTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="tab-inventory" class="tab-section">
+  <div class="card">
+    <div class="card-title">📦 Current Stock Levels</div>
+    <div class="inventory-grid" id="inventoryGrid"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">✏️ Update Stock</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Item</label>
+        <select id="stockItem">
+          <option value="charcoal">Charcoal (barrels)</option>
+          <option value="fat">Fat (kg)</option>
+          <option value="flour">Wheat Flour (2kg packs)</option>
+          <option value="rice_stock">Rice (kg)</option>
+          <option value="beans_stock">Beans (kg)</option>
+          <option value="ndengu_stock">Ndengu (kg)</option>
+          <option value="cooking_oil">Cooking Oil (L)</option>
+          <option value="baking_powder">Baking Powder (packets)</option>
+          <option value="salt">Salt (kg)</option>
+          <option value="sugar">Sugar (kg)</option>
+          <option value="milk">Milk (L)</option>
+          <option value="cabbage">Cabbage (heads)</option>
+          <option value="carrots">Carrots (kg)</option>
+          <option value="onions">Onions (kg)</option>
+          <option value="tomatoes">Tomatoes (kg)</option>
+          <option value="potatoes">Potatoes (kg)</option>
+        </select>
+      </div>
+      <div class="form-group" style="max-width:110px"><label>Quantity</label><input type="number" id="stockQty" placeholder="0" step="0.5"></div>
+      <div class="form-group" style="max-width:160px">
+        <label>Action</label>
+        <select id="stockAction">
+          <option value="add">Add (+)</option>
+          <option value="set">Set Exact</option>
+          <option value="remove">Used / Remove (−)</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="updateStock()">Update</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAPATI -->
+<div id="tab-chapati" class="tab-section">
+  <div class="card">
+    <div class="card-title">🫓 Chapati Production Dashboard</div>
+    <div class="chap-grid" id="chapatiStats"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📝 Log Chapati Batch</div>
+    <div class="form-row">
+      <div class="form-group" style="max-width:160px"><label>Flour Packs Used (2kg each)</label><input type="number" id="chapFlour" placeholder="1" min="1" value="1"></div>
+      <div class="form-group" style="max-width:140px"><label>Chapatis Made</label><input type="number" id="chapMade" placeholder="auto (70/pack)"></div>
+      <div class="form-group" style="max-width:140px">
+        <label>Cook</label>
+        <select id="chapCook"><option>Dennis</option><option>Elosy</option></select>
+      </div>
+      <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="logChapati()">Log Batch</button></div>
+    </div>
+    <div style="overflow-x:auto;margin-top:12px">
+      <table>
+        <thead><tr><th>Time</th><th>Flour Packs</th><th>Chapatis Made</th><th>Avg/Pack</th><th>Cook</th></tr></thead>
+        <tbody id="chapatiLogTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTOS -->
+<div id="tab-photos" class="tab-section">
+  <div class="card">
+    <div class="card-title">📸 Food Photo Gallery</div>
+    <p style="font-size:0.8rem;color:var(--text2);margin-bottom:14px">Click any slot to upload or change a photo. Stored locally on your device.</p>
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+</div>
+
+<!-- LEDGER -->
+<div id="tab-ledger" class="tab-section">
+  <div class="card">
+    <div class="flex justify-between items-center mb-12 flex-wrap gap-8">
+      <div class="card-title" style="margin-bottom:0">📒 Full Ledger</div>
+      <div class="flex gap-8 flex-wrap">
+        <select id="ledgerFilter" onchange="renderLedger()" style="max-width:150px">
+          <option value="all">All Entries</option>
+          <option value="sale">Sales Only</option>
+          <option value="expense">Expenses Only</option>
+        </select>
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn btn-danger btn-sm" onclick="clearToday()">🗑 Clear Today</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Date & Time</th><th>Type</th><th>Details</th><th>In (KSH)</th><th>Out (KSH)</th><th>Balance</th><th>Actions</th></tr></thead>
+        <tbody id="ledgerTable"></tbody>
+      </table>
+    </div>
+    <hr>
+    <div class="flex justify-between items-center flex-wrap gap-8">
+      <div class="flex gap-12 flex-wrap text-sm">
+        <span>Total In: <span class="mono text-green bold" id="ledgerTotalIn">0</span></span>
+        <span>Total Out: <span class="mono text-red bold" id="ledgerTotalOut">0</span></span>
+      </div>
+      <span class="text-sm">Net Balance: <span class="mono bold" id="ledgerNet">0</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- PERSONNEL -->
+<div id="tab-personnel" class="tab-section">
+  <div class="card">
+    <div class="card-title">👥 Hotel Team</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px" id="personnelGrid"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">💵 Record Wage Payment</div>
+    <div class="form-row">
+      <div class="form-group"><label>Staff Member</label>
+        <select id="wageStaff"><option>Elosy</option><option>Kelvin</option><option>Dennis</option><option>Mathew</option></select>
+      </div>
+      <div class="form-group" style="max-width:130px"><label>Amount (KSH)</label><input type="number" id="wageAmount" placeholder="0"></div>
+      <div class="form-group"><label>Note</label><input type="text" id="wageNote" placeholder="Daily pay, advance…"></div>
+      <div style="display:flex;align-items:flex-end"><button class="btn btn-danger" onclick="payWage()">Pay</button></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title">✏️ Edit Entry</div>
+    <div class="form-group mb-12"><label>Description</label><input type="text" id="editDesc"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Amount (KSH)</label><input type="number" id="editAmount"></div>
+      <div class="form-group"><label>Note</label><input type="text" id="editNote"></div>
+    </div>
+    <input type="hidden" id="editIndex">
+    <div class="flex gap-8 mt-12">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ==================== STATE ====================
+let state = JSON.parse(localStorage.getItem('comrade_hotel_v2') || 'null') || {
+  ledger: [], chapatiLog: [], photos: {},
+  inventory: { charcoal:0, fat:0, flour:0, rice_stock:0, beans_stock:0, ndengu_stock:0, cooking_oil:0, baking_powder:0, salt:0, sugar:0, milk:0, cabbage:0, carrots:0, onions:0, tomatoes:0, potatoes:0 }
+};
+function save() { localStorage.setItem('comrade_hotel_v2', JSON.stringify(state)); }
+
+// ==================== CONFIG ====================
+const MENU = [
+  { id:'beans', name:'Beans Stew', icon:'🫘', price:30 },
+  { id:'ndengu', name:'Ndengu Stew', icon:'🟢', price:30 },
+  { id:'chapati', name:'Chapati', icon:'🫓', price:20 },
+  { id:'chips', name:'Chips', icon:'🍟', price:50, variants:[50,70,100] },
+  { id:'chapati_choma', name:'Chapati Choma', icon:'🔥', price:20 },
+  { id:'rice', name:'Rice', icon:'🍚', price:30 },
+  { id:'tea', name:'Tea (cup)', icon:'☕', price:20 },
+  { id:'mandazi', name:'Mandazi', icon:'🍩', price:10 },
+];
+const INV_META = {
+  charcoal:{name:'Charcoal',unit:'barrels',price:100}, fat:{name:'Fat',unit:'kg',price:270},
+  flour:{name:'Wheat Flour',unit:'2kg packs',price:200}, rice_stock:{name:'Rice',unit:'kg',price:100},
+  beans_stock:{name:'Beans',unit:'kg',price:200}, ndengu_stock:{name:'Ndengu',unit:'kg',price:200},
+  cooking_oil:{name:'Cooking Oil',unit:'L',price:250}, baking_powder:{name:'Baking Powder',unit:'packets',price:40},
+  salt:{name:'Salt',unit:'kg',price:55}, sugar:{name:'Sugar',unit:'kg',price:130},
+  milk:{name:'Milk',unit:'L',price:65}, cabbage:{name:'Cabbage',unit:'heads',price:45},
+  carrots:{name:'Carrots',unit:'kg',price:60}, onions:{name:'Onions',unit:'kg',price:70},
+  tomatoes:{name:'Tomatoes',unit:'kg',price:80}, potatoes:{name:'Potatoes',unit:'kg',price:60}
+};
+const PHOTOS_META = [
+  {id:'chapati',name:'Chapati',icon:'🫓'},{id:'rice',name:'Rice',icon:'🍚'},
+  {id:'beans',name:'Beans',icon:'🫘'},{id:'ndengu',name:'Ndengu',icon:'🟢'},
+  {id:'cabbage',name:'Cabbage',icon:'🥬'},{id:'chips',name:'Chips',icon:'🍟'}
+];
+const PERSONNEL = [
+  {name:'Elosy',role:'Chef',icon:'👩‍🍳',color:'#e05090'},
+  {name:'Kelvin',role:'Waiter',icon:'🧑‍🍽️',color:'#4090e0'},
+  {name:'Dennis',role:'Cook',icon:'👨‍🍳',color:'#40c080'},
+  {name:'Mathew',role:'Manager',icon:'👔',color:'#e0a020'},
+];
+
+let order = {}, chipsVariant = {};
+
+// ==================== CLOCK ====================
+function updateClock() {
+  const n = new Date();
+  const h = String(n.getHours()).padStart(2,'0'), m = String(n.getMinutes()).padStart(2,'0'), s = String(n.getSeconds()).padStart(2,'0');
+  document.getElementById('clockDisplay').textContent = h+':'+m+':'+s;
+  const mins = n.getHours()*60+n.getMinutes();
+  const badge = document.getElementById('statusBadge');
+  if (mins >= 360 && mins <= 1230) { badge.textContent='● OPEN'; badge.className='status-badge status-open'; }
+  else { badge.textContent='● CLOSED'; badge.className='status-badge status-closed'; }
+}
+setInterval(updateClock, 1000); updateClock();
+
+function ts() { return new Date().toLocaleString('en-KE',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true}); }
+
+// ==================== TABS ====================
+const TAB_IDS = ['dashboard','sales','expenses','inventory','chapati','photos','ledger','personnel'];
+function showTab(id) {
+  TAB_IDS.forEach(t => { document.getElementById('tab-'+t).classList.remove('active'); });
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelectorAll('nav button')[TAB_IDS.indexOf(id)].classList.add('active');
+  const renders = {dashboard:renderDashboard, sales:renderMenu, expenses:renderExpenses, inventory:renderInventory, chapati:renderChapatiDashboard, photos:renderPhotos, ledger:renderLedger, personnel:renderPersonnel};
+  if (renders[id]) renders[id]();
+}
+
+// ==================== DASHBOARD ====================
+function renderDashboard() {
+  const sales = state.ledger.filter(e=>e.type==='sale');
+  const exps = state.ledger.filter(e=>e.type==='expense');
+  const totalIn = sales.reduce((a,e)=>a+e.amount,0);
+  const totalOut = exps.reduce((a,e)=>a+e.amount,0);
+  const net = totalIn - totalOut;
+  const today = new Date().toDateString();
+  const tIn = sales.filter(e=>new Date(e.rawTs).toDateString()===today).reduce((a,e)=>a+e.amount,0);
+  const tOut = exps.filter(e=>new Date(e.rawTs).toDateString()===today).reduce((a,e)=>a+e.amount,0);
+  const counts = {};
+  sales.filter(e=>new Date(e.rawTs).toDateString()===today).forEach(s => s.items && s.items.forEach(i => { counts[i.name]=(counts[i.name]||0)+i.qty; }));
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('summaryStats').innerHTML = `
+    <div class="stat-card"><div class="stat-value text-green">KSH ${totalIn.toLocaleString()}</div><div class="stat-label">All-time Revenue</div></div>
+    <div class="stat-card"><div class="stat-value text-red">KSH ${totalOut.toLocaleString()}</div><div class="stat-label">All-time Expenses</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:${net>=0?'var(--green)':'var(--red)'}">KSH ${net.toLocaleString()}</div><div class="stat-label">Net Balance</div></div>
+    <div class="stat-card"><div class="stat-value">${sales.length}</div><div class="stat-label">Total Sales</div></div>`;
+  document.getElementById('financialStats').innerHTML = `
+    <div class="stat-card"><div class="stat-value text-green">KSH ${tIn.toLocaleString()}</div><div class="stat-label">Today's Sales</div></div>
+    <div class="stat-card"><div class="stat-value text-red">KSH ${tOut.toLocaleString()}</div><div class="stat-label">Today's Expenses</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:${(tIn-tOut)>=0?'var(--green)':'var(--red)'}">KSH ${(tIn-tOut).toLocaleString()}</div><div class="stat-label">Today Net</div></div>
+    <div class="stat-card"><div class="stat-value" style="font-size:1rem">${top?top[1]+' × '+top[0]:'—'}</div><div class="stat-label">Top Item Today</div></div>`;
+  const recent = [...state.ledger].reverse().slice(0,8);
+  document.getElementById('recentActivity').innerHTML = recent.length===0
+    ? '<p style="text-align:center;color:var(--text3);padding:16px;font-size:0.83rem">No activity yet — start recording sales!</p>'
+    : `<table><thead><tr><th>Time</th><th>Type</th><th>Details</th><th>Amount</th></tr></thead><tbody>${
+      recent.map(e=>`<tr><td class="ts">${e.ts}</td><td><span class="badge ${e.type==='sale'?'badge-sale':'badge-out'}">${e.type.toUpperCase()}</span></td><td style="font-size:0.82rem">${e.desc}</td><td class="mono ${e.type==='sale'?'text-green':'text-red'}">${e.type==='sale'?'+':'-'}${e.amount}</td></tr>`).join('')
+    }</tbody></table>`;
+}
+
+// ==================== SALES ====================
+function renderMenu() {
+  document.getElementById('menuGrid').innerHTML = MENU.map(item => {
+    const qty = order[item.id]?.qty || 0;
+    if (item.variants) {
+      const sel = chipsVariant[item.id] || item.variants[0];
+      return `<div class="menu-item">
+        <div class="menu-item-name">${item.icon} ${item.name}</div>
+        <div class="chips-options">${item.variants.map(v=>`<span class="chips-opt ${sel===v?'selected':''}" onclick="setChipsVariant('${item.id}',${v})">KSH ${v}</span>`).join('')}</div>
+        <div class="menu-item-price">@ KSH ${sel}</div>
+        <div class="qty-control"><button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button><span class="qty-display">${qty}</span><button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button></div>
+      </div>`;
+    }
+    return `<div class="menu-item">
+      <div class="menu-item-name">${item.icon} ${item.name}</div>
+      <div class="menu-item-price">@ KSH ${item.price}</div>
+      <div class="qty-control"><button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button><span class="qty-display">${qty}</span><button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button></div>
+    </div>`;
+  }).join('');
+  renderOrderSummary();
+}
+
+function setChipsVariant(id, v) {
+  chipsVariant[id] = v;
+  if (order[id]) order[id].price = v;
+  renderMenu();
+}
+function changeQty(id, delta) {
+  const item = MENU.find(i=>i.id===id);
+  if (!order[id]) order[id] = { qty:0, price: item.variants?(chipsVariant[id]||item.variants[0]):item.price, name:item.name, icon:item.icon };
+  order[id].qty = Math.max(0, order[id].qty + delta);
+  if (order[id].qty===0) delete order[id];
+  renderMenu();
+}
+function renderOrderSummary() {
+  const lines = Object.entries(order);
+  if (lines.length===0) {
+    document.getElementById('orderLines').innerHTML='<p style="text-align:center;color:var(--text3);padding:12px;font-size:0.82rem">No items selected</p>';
+    document.getElementById('orderTotal').textContent='KSH 0'; return;
+  }
+  let total=0;
+  document.getElementById('orderLines').innerHTML = lines.map(([,item])=>{
+    const sub=item.qty*item.price; total+=sub;
+    return `<div class="order-line"><span>${item.icon} ${item.name} ×${item.qty}</span><span class="mono text-accent">KSH ${sub}</span></div>`;
+  }).join('');
+  document.getElementById('orderTotal').textContent=`KSH ${total.toLocaleString()}`;
+}
+function clearOrder() { order={}; chipsVariant={}; renderMenu(); }
+function recordSale() {
+  const lines = Object.entries(order);
+  if (lines.length===0) { toast('Add items first','error'); return; }
+  const total = lines.reduce((a,[,i])=>a+i.qty*i.price, 0);
+  const note = document.getElementById('orderNote').value.trim();
+  const items = lines.map(([,i])=>({name:i.name,qty:i.qty,price:i.price,sub:i.qty*i.price}));
+  const desc = items.map(i=>`${i.qty}× ${i.name}`).join(', ') + (note?` [${note}]`:'');
+  state.ledger.push({type:'sale',desc,amount:total,note,items,ts:ts(),rawTs:Date.now()});
+  save(); toast(`✓ Sale: KSH ${total}`,'success'); clearOrder(); renderDashboard();
+}
+
+// ==================== EXPENSES ====================
+function addExpense() {
+  const item=document.getElementById('expItem').value.trim();
+  const amount=parseFloat(document.getElementById('expAmount').value);
+  if (!item||!amount) { toast('Fill item and amount','error'); return; }
+  const cat=document.getElementById('expCategory').value;
+  const qty=document.getElementById('expQty').value.trim();
+  const note=document.getElementById('expNote').value.trim();
+  const desc=item+(qty?` (${qty})`:'');
+  state.ledger.push({type:'expense',desc,amount,category:cat,qty,note,ts:ts(),rawTs:Date.now()});
+  save();
+  ['expItem','expAmount','expQty','expNote'].forEach(id=>document.getElementById(id).value='');
+  renderExpenses(); toast(`Expense: KSH ${amount}`,'info');
+}
+function renderExpenses() {
+  const exps = state.ledger.filter(e=>e.type==='expense');
+  document.getElementById('totalExpenses').textContent=`KSH ${exps.reduce((a,e)=>a+e.amount,0).toLocaleString()}`;
+  document.getElementById('expenseTable').innerHTML = exps.length===0
+    ? '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">No expenses yet</td></tr>'
+    : [...exps].reverse().map(e=>{
+        const idx=findIdx(e);
+        return `<tr><td class="ts">${e.ts}</td><td style="font-size:0.82rem">${e.desc}</td><td style="font-size:0.7rem;color:var(--text3)">${e.category||''}</td><td style="font-size:0.8rem">${e.qty||'—'}</td><td class="mono text-red">KSH ${e.amount}</td><td><button class="btn btn-secondary btn-sm" onclick="openEdit(${idx})">✏️</button></td></tr>`;
+      }).join('');
+}
+
+// ==================== INVENTORY ====================
+function renderInventory() {
+  document.getElementById('inventoryGrid').innerHTML = Object.entries(INV_META).map(([k,m])=>{
+    const qty=state.inventory[k]||0; const low=qty<=1;
+    return `<div class="inv-card" style="${low?'border-color:rgba(224,80,80,0.4)':''}">
+      <div class="inv-name">${m.name}${low?` <span style="color:var(--red);font-size:0.68rem">⚠ LOW</span>`:''}</div>
+      <div class="inv-detail">Est. KSH ${m.price}/${m.unit}</div>
+      <div class="inv-qty">${qty} <span class="inv-unit">${m.unit}</span></div>
+    </div>`;
+  }).join('');
+}
+function updateStock() {
+  const item=document.getElementById('stockItem').value;
+  const qty=parseFloat(document.getElementById('stockQty').value)||0;
+  const action=document.getElementById('stockAction').value;
+  if (action==='add') state.inventory[item]=(state.inventory[item]||0)+qty;
+  else if (action==='set') state.inventory[item]=qty;
+  else state.inventory[item]=Math.max(0,(state.inventory[item]||0)-qty);
+  save(); renderInventory(); toast(`Stock updated: ${INV_META[item].name}`,'success');
+}
+
+// ==================== CHAPATI ====================
+function renderChapatiDashboard() {
+  const chapSales = state.ledger.filter(e=>e.type==='sale'&&e.items&&e.items.some(i=>i.name.toLowerCase().includes('chapati')));
+  const sold = chapSales.reduce((a,e)=>a+(e.items.filter(i=>i.name.toLowerCase().includes('chapati')).reduce((b,i)=>b+i.qty,0)),0);
+  const totalMade=state.chapatiLog.reduce((a,e)=>a+e.made,0);
+  const totalFlour=state.chapatiLog.reduce((a,e)=>a+e.flour,0);
+  const rem=Math.max(0,totalMade-sold);
+  document.getElementById('chapatiStats').innerHTML = `
+    <div class="chap-stat"><div class="chap-big">${totalFlour}</div><div class="chap-label">Flour Packs Used</div></div>
+    <div class="chap-stat"><div class="chap-big">${totalMade}</div><div class="chap-label">Total Chapatis Made</div></div>
+    <div class="chap-stat"><div class="chap-big text-green">${sold}</div><div class="chap-label">Sold</div></div>
+    <div class="chap-stat"><div class="chap-big text-accent">${rem}</div><div class="chap-label">Remaining</div></div>
+    <div class="chap-stat"><div class="chap-big" style="font-size:1.2rem">KSH ${(sold*20).toLocaleString()}</div><div class="chap-label">Chapati Revenue</div></div>
+    <div class="chap-stat"><div class="chap-big">${state.chapatiLog.length}</div><div class="chap-label">Batches</div></div>`;
+  document.getElementById('chapatiLogTable').innerHTML = state.chapatiLog.length===0
+    ? '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">No batches logged yet</td></tr>'
+    : [...state.chapatiLog].reverse().map(e=>`<tr><td class="ts">${e.ts}</td><td class="mono">${e.flour}</td><td class="mono text-green">${e.made}</td><td class="mono">${Math.round(e.made/e.flour)}</td><td>${e.cook}</td></tr>`).join('');
+}
+function logChapati() {
+  const flour=parseInt(document.getElementById('chapFlour').value)||1;
+  const madeVal=document.getElementById('chapMade').value;
+  const made=madeVal?parseInt(madeVal):flour*70;
+  const cook=document.getElementById('chapCook').value;
+  state.chapatiLog.push({flour,made,cook,ts:ts(),rawTs:Date.now()});
+  state.inventory.flour=Math.max(0,(state.inventory.flour||0)-flour);
+  save(); renderChapatiDashboard(); toast(`Batch logged: ${made} chapatis`,'success');
+}
+
+// ==================== PHOTOS ====================
+function renderPhotos() {
+  document.getElementById('photoGrid').innerHTML = PHOTOS_META.map(p=>{
+    const img=state.photos[p.id];
+    return `<div class="photo-slot" title="Upload ${p.name}">
+      ${img?`<img src="${img}" alt="${p.name}"><div class="photo-overlay"><span>📷 Change</span></div>`:''}
+      <div class="photo-slot-icon">${p.icon}</div>
+      <div class="photo-slot-label">${p.name}</div>
+      <input type="file" accept="image/*" onchange="uploadPhoto('${p.id}',this)">
+    </div>`;
+  }).join('');
+}
+function uploadPhoto(id, input) {
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{ state.photos[id]=e.target.result; save(); renderPhotos(); toast(`Photo uploaded: ${PHOTOS_META.find(p=>p.id===id)?.name}`,'success'); };
+  r.readAsDataURL(f);
+}
+
+// ==================== LEDGER ====================
+function renderLedger() {
+  const filter=document.getElementById('ledgerFilter').value;
+  const entries=filter==='all'?state.ledger:state.ledger.filter(e=>e.type===filter);
+  let bal=0;
+  const withBal=entries.map(e=>{ if(e.type==='sale') bal+=e.amount; else bal-=e.amount; return {...e,bal}; });
+  const tIn=state.ledger.filter(e=>e.type==='sale').reduce((a,e)=>a+e.amount,0);
+  const tOut=state.ledger.filter(e=>e.type==='expense').reduce((a,e)=>a+e.amount,0);
+  const net=tIn-tOut;
+  document.getElementById('ledgerTotalIn').textContent=`KSH ${tIn.toLocaleString()}`;
+  document.getElementById('ledgerTotalOut').textContent=`KSH ${tOut.toLocaleString()}`;
+  const ne=document.getElementById('ledgerNet');
+  ne.textContent=`KSH ${net.toLocaleString()}`; ne.className=`mono bold ${net>=0?'text-green':'text-red'}`;
+  document.getElementById('ledgerTable').innerHTML = withBal.length===0
+    ? '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">No entries yet</td></tr>'
+    : [...withBal].reverse().map(e=>{
+        const idx=findIdx(e);
+        return `<tr><td class="ts">${e.ts}</td><td><span class="badge ${e.type==='sale'?'badge-sale':'badge-out'}">${e.type.toUpperCase()}</span></td><td style="font-size:0.8rem">${e.desc}</td><td class="mono text-green">${e.type==='sale'?e.amount:'—'}</td><td class="mono text-red">${e.type==='expense'?e.amount:'—'}</td><td class="mono" style="color:${e.bal>=0?'var(--accent2)':'var(--red)'}">${e.bal.toLocaleString()}</td><td style="white-space:nowrap"><button class="btn btn-secondary btn-sm" onclick="openEdit(${idx})">✏️</button> <button class="btn btn-danger btn-sm" onclick="deleteEntry(${idx})">🗑</button></td></tr>`;
+      }).join('');
+}
+function findIdx(e) { return state.ledger.findIndex(x=>x.rawTs===e.rawTs&&x.type===e.type&&x.desc===e.desc); }
+function deleteEntry(idx) {
+  if(!confirm('Delete this entry?')) return;
+  state.ledger.splice(idx,1); save(); renderLedger(); renderDashboard(); toast('Deleted','info');
+}
+function clearToday() {
+  if(!confirm('Clear all of today\'s entries?')) return;
+  const today=new Date().toDateString();
+  state.ledger=state.ledger.filter(e=>new Date(e.rawTs).toDateString()!==today);
+  save(); renderLedger(); renderDashboard(); toast('Today cleared','info');
+}
+function exportCSV() {
+  const rows=state.ledger.map(e=>[e.ts,e.type,`"${e.desc}"`,e.type==='sale'?e.amount:'',e.type==='expense'?e.amount:''].join(','));
+  const csv=['Date/Time,Type,Description,In (KSH),Out (KSH)',...rows].join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`comrade_hotel_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('CSV exported','success');
+}
+
+// ==================== PERSONNEL ====================
+function renderPersonnel() {
+  document.getElementById('personnelGrid').innerHTML = PERSONNEL.map(p=>`
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+      <div style="font-size:1.8rem;margin-bottom:5px">${p.icon}</div>
+      <div style="font-weight:700;color:${p.color}">${p.name}</div>
+      <div style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px">${p.role}</div>
+      <div style="margin-top:8px;font-size:0.77rem;color:var(--text2)">
+        Total wages: <span class="mono" style="color:var(--red)">KSH ${
+          state.ledger.filter(e=>e.type==='expense'&&e.category==='salary'&&e.desc.includes(p.name)).reduce((a,e)=>a+e.amount,0)
+        }</span>
+      </div>
+    </div>`).join('');
+}
+function payWage() {
+  const staff=document.getElementById('wageStaff').value;
+  const amount=parseFloat(document.getElementById('wageAmount').value);
+  const note=document.getElementById('wageNote').value.trim();
+  if(!amount) { toast('Enter amount','error'); return; }
+  state.ledger.push({type:'expense',desc:`Wage: ${staff}${note?` (${note})`:''}`,amount,category:'salary',note,ts:ts(),rawTs:Date.now()});
+  save(); document.getElementById('wageAmount').value=''; document.getElementById('wageNote').value='';
+  renderPersonnel(); toast(`Wage to ${staff}: KSH ${amount}`,'info');
+}
+
+// ==================== EDIT MODAL ====================
+function openEdit(idx) {
+  const e=state.ledger[idx]; if(!e) return;
+  document.getElementById('editDesc').value=e.desc;
+  document.getElementById('editAmount').value=e.amount;
+  document.getElementById('editNote').value=e.note||'';
+  document.getElementById('editIndex').value=idx;
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
+function saveEdit() {
+  const idx=parseInt(document.getElementById('editIndex').value);
+  state.ledger[idx].desc=document.getElementById('editDesc').value;
+  state.ledger[idx].amount=parseFloat(document.getElementById('editAmount').value)||0;
+  state.ledger[idx].note=document.getElementById('editNote').value;
+  state.ledger[idx].ts+=' ✏️';
+  save(); closeEditModal(); renderLedger(); renderExpenses(); renderDashboard(); toast('Entry updated','success');
+}
+document.getElementById('editModal').addEventListener('click',e=>{ if(e.target.id==='editModal') closeEditModal(); });
+
+// ==================== TOAST ====================
+function toast(msg, type='info') {
+  const c=document.getElementById('toastContainer');
+  const el=document.createElement('div'); el.className=`toast ${type}`; el.textContent=msg;
+  c.appendChild(el); setTimeout(()=>el.remove(), 3500);
+}
+
+// ==================== INIT ====================
+renderDashboard();
+</script>
+</body>
+</html>
